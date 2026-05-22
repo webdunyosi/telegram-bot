@@ -60,7 +60,18 @@ const bootstrap = () => {
       return bot.sendMessage(chatId, "Nomalum buyruq");
     }
   });
+
+  bot.on("callback_query", async (msg) => {
+    const data = msg.data;
+    const chatId = msg.message.chat.id;
+
+    if (data == obj[chatId]) {
+      return bot.sendMessage(chatId, "Tabriklaymiz siz topdingiz");
+    } else {
+      await bot.sendMessage(chatId, `Noto'g'ri javob kompyuter o'ylagan son : ${obj[chatId]}`);
+      return bot.sendMessage(chatId, "O'yin tugadi");
+    }
+  })
 }
 
 bootstrap()
-
