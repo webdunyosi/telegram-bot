@@ -1,25 +1,16 @@
 const TelegramBot = require("node-telegram-bot-api");
-
+const { gameOptions, againOptions } = require("./option");
 const token = "8929002883:AAESMiQu6nLHNqQCtLrAhsF8TG_yxMrEPbE";
 
 const bot = new TelegramBot(token, { polling: true });
 
 const obj = {}
 
-const gameOptions = {
-  reply_markup: {
-    inline_keyboard: [
-      [{ text: "1", callback_data: "1" },
-      { text: "2", callback_data: "2" },
-      { text: "3", callback_data: "3" }],
-      [{ text: "4", callback_data: "4" },
-      { text: "5", callback_data: "5" },
-      { text: "6", callback_data: "6" }],
-      [{ text: "7", callback_data: "7" },
-      { text: "8", callback_data: "8" },
-      { text: "9", callback_data: "9" }]
-    ]
-  }
+const startGame = async (chatId) => {
+  await bot.sendMessage(chatId, "Kompyuter 0-9 gacha son o'yladi siz toping");
+  const randomNumber = Math.floor(Math.random() * 10)
+  obj[chatId] = randomNumber
+  await bot.sendMessage(chatId, "0-9 gacha sonlardan birini yozing", gameOptions)
 }
 
 const bootstrap = () => {
@@ -52,10 +43,7 @@ const bootstrap = () => {
         `Sizning ID ${msg.from?.id}, sizning ismingiz ${msg.from?.first_name}, sizning user nomingiz ${msg.from?.username}`,
       );
     } else if (text === "/game") {
-      await bot.sendMessage(chatId, "Kompyuter 1 xonali son o'yladi siz toping");
-      const randomNumber = Math.floor(Math.random() * 10)
-      obj[chatId] = randomNumber
-      return bot.sendMessage(chatId, "1-9 gacha sonlardan birini yozing", gameOptions)
+      return startGame(chatId);
     } else {
       return bot.sendMessage(chatId, "Nomalum buyruq");
     }
@@ -66,10 +54,20 @@ const bootstrap = () => {
     const chatId = msg.message.chat.id;
 
     if (data == obj[chatId]) {
-      return bot.sendMessage(chatId, "Tabriklaymiz siz topdingiz");
+      await bot.sendSticker(
+        chatId,
+        "https://cdn.combot.online/foggypepe/webp/3xf09f90b8.webp",
+      );
+      return bot.sendMessage(chatId, "Tabriklaymiz siz topdingiz", againOptions);
+    } else if (data === "/again") {
+      return startGame(chatId);
     } else {
+      await bot.sendSticker(
+        chatId,
+        "https://cdn.combot.online/foggypepe/webp/15xf09f90b8.webp",
+      );
       await bot.sendMessage(chatId, `Noto'g'ri javob kompyuter o'ylagan son : ${obj[chatId]}`);
-      return bot.sendMessage(chatId, "O'yin tugadi");
+      return bot.sendMessage(chatId, "O'yin tugadi", againOptions);
     }
   })
 }
